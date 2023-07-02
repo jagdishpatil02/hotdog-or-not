@@ -8,9 +8,10 @@
         <img [src]="selectedFileDataUrl" alt="Uploaded Image" class="mx-auto max-w-full">
     </div>
     <div *ngIf="hotdog" class="text-green-500 font-bold mt-4 text-lg">This is a hot dog.</div>
-    <div *ngIf="nothotdog" class="text-red-500 font-bold mt-4 text-lg">This is not a hot dog.</div>
+    <div *ngIf="hotdog == false" class="text-red-500 font-bold mt-4 text-lg">This is not a hot dog.</div>
 
     <footer class="py-4 text-center absolute bottom-0 left-0 right-0">
+
         made with 🌭 by <a href="https://twitter.com/jagdishpatil02" target="_blank"
             class="text-blue-500 font-bold">Jagdish</a>
     </footer>

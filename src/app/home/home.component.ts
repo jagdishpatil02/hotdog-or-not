@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
 import { HomeService } from './home.service';
 @Component({
   selector: 'app-home',
@@ -7,20 +6,23 @@ import { HomeService } from './home.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  constructor(private http: HttpClient, private homeService: HomeService) {}
+  constructor(private homeService: HomeService) {}
 
-  selectedFile: any;
-  selectedFileDataUrl: any;
-  hotdog: any;
-  nothotdog: any;
+  selectedFile: File | null = null;
+  selectedFileDataUrl: string = '';
+  hotdog: boolean | undefined = undefined;
   isApiCallInProgress: boolean = false;
 
   ngOnInit(): void {}
 
-  onFileSelected(event: any) {
-    this.hotdog = false;
-    this.nothotdog = false;
-    this.selectedFile = event.target.files[0];
+  onFileSelected(event: Event) {
+    this.hotdog = undefined;
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length > 0) {
+      this.selectedFile = files[0];
+    }
+
     this.readFile();
   }
 
@@ -29,7 +31,9 @@ export class HomeComponent implements OnInit {
     reader.onload = () => {
       this.selectedFileDataUrl = reader.result as string;
     };
-    reader.readAsDataURL(this.selectedFile);
+    if (this.selectedFile) {
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
   async uploadImage() {
@@ -39,9 +43,6 @@ export class HomeComponent implements OnInit {
       console.error('No file selected');
       return;
     }
-
-    this.hotdog = false;
-    this.nothotdog = false;
 
     this.homeService.sendImage(this.selectedFile).subscribe(
       (response: any) => {
@@ -53,13 +54,13 @@ export class HomeComponent implements OnInit {
           }
 
           if (obj.label != 'hot dog') {
-            this.nothotdog = true;
+            this.hotdog = false;
             break;
           }
         }
         this.isApiCallInProgress = false;
       },
-      (error: any) => {
+      (error: Error) => {
         // Handle error response
         console.error(error);
         this.isApiCallInProgress = false;
